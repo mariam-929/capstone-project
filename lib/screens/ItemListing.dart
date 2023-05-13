@@ -16,7 +16,7 @@ class _ItemListingState extends State<ItemListing> {
   List<Item> items = [
     Item(
       id: '1',
-      title: 'Hair',
+      title: 'dressing',
       price: 15.0,
       imageUrl:
           'https://litb-cgis.rightinthebox.com/images/640x640/201912/hhsmxa1577242370688.jpg',
