@@ -1,244 +1,133 @@
-// import 'dart:io';
-// import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
+import 'package:firebase_auth101/screens/welcome_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_auth101/screens/welcome_screen.dart';
-// import 'package:flutter/material.dart';
-// import 'package:image_picker/image_picker.dart';
+class ProfilePage extends StatefulWidget {
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
 
-// class EditProfilePage extends StatefulWidget {
-//   @override
-//   _EditProfilePageState createState() => _EditProfilePageState();
-// }
+class _ProfilePageState extends State<ProfilePage> {
+  File? _imageFile;
+  final picker = ImagePicker();
 
-// class _EditProfilePageState extends State<EditProfilePage> {
-//   final _auth = FirebaseAuth.instance;
-//   final _firestore = FirebaseFirestore.instance;
-//   final _storage = FirebaseStorage.instance;
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await picker.pickImage(source: source);
 
-//   final _formKey = GlobalKey<FormState>();
-//   final _picker = ImagePicker();
+    setState(() {
+      _imageFile = File(pickedFile!.path);
+    });
 
-//   String _fullName = '';
-//   String _phoneNumber = '';
-//   String _profileImageUrl = '';
+    _uploadImage();
+  }
 
-//   Future<Map<String, dynamic>?> _loadUserData() async {
-//     final user = _auth.currentUser;
-//     if (user != null) {
-//       final userData = await _firestore.collection('Users').doc(user.uid).get();
-//       return userData.data();
-//     }
-//     return null;
-//   }
+  Future<void> _uploadImage() async {
+    if (_imageFile == null) {
+      return;
+    }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return FutureBuilder<Map<String, dynamic>?>(
-//       future: _loadUserData(),
-//       builder: (context, snapshot) {
-//         if (snapshot.connectionState == ConnectionState.waiting) {
-//           return Center(child: CircularProgressIndicator());
-//         } else if (snapshot.hasError) {
-//           return Text('Error: ${snapshot.error}');
-//         } else {
-//           final userData = snapshot.data;
-//           _fullName = userData?['fullname'] ?? '';
-//           _phoneNumber = userData?['phoneNumber'] ?? '';
-//           _profileImageUrl = userData?['imageUrl'] ?? '';
+    final user = FirebaseAuth.instance.currentUser;
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('profile_pics')
+        .child('${user!.uid}.jpg');
 
-//           return Scaffold(
-//             appBar: AppBar(
-//               title: Text('Edit Profile'),
-//             ),
-//             body: SingleChildScrollView(
-//               child: Form(
-//                 key: _formKey,
-//                 child: Column(
-//                   children: [
-//                     GestureDetector(
-//                       onTap: _pickImage,
-//                       child: CircleAvatar(
-//                         radius: 60,
-//                         backgroundColor:
-//                             Colors.grey, // Choose your desired background color
-//                         child: _profileImageUrl.isEmpty
-//                             ? Icon(
-//                                 Icons.person,
-//                                 size: 60,
-//                                 color: Colors
-//                                     .white, // Choose your desired icon color
-//                               )
-//                             : null,
-//                         backgroundImage: _profileImageUrl.isNotEmpty
-//                             ? NetworkImage(_profileImageUrl)
-//                             : null,
-//                       ),
-//                     ),
-//                     TextFormField(
-//                       initialValue: _fullName,
-//                       decoration: InputDecoration(labelText: 'Full Name'),
-//                       validator: (value) {
-//                         if (value == null || value.isEmpty) {
-//                           return 'Please enter your full name';
-//                         }
-//                         return null;
-//                       },
-//                       onChanged: (value) {
-//                         _fullName = value;
-//                       },
-//                     ),
-//                     TextFormField(
-//                       initialValue: _phoneNumber,
-//                       decoration: InputDecoration(labelText: 'Phone Number'),
-//                       validator: (value) {
-//                         if (value == null || value.isEmpty) {
-//                           return 'Please enter your phone number';
-//                         }
-//                         return null;
-//                       },
-//                       onChanged: (value) {
-//                         _phoneNumber = value;
-//                       },
-//                     ),
-//                     ElevatedButton(
-//                       onPressed: _updateProfile,
-//                       child: Text('Update Profile'),
-//                     ),
-//                     ElevatedButton(
-//                       onPressed: () {
-//                         FirebaseAuth.instance.signOut();
-//                         Navigator.push(
-//                             context,
-//                             MaterialPageRoute(
-//                                 builder: (context) => WelcomeScreen()));
-//                       },
-//                       child: Text('Sign Out'),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           );
-//         }
-//       },
-//     );
-//   }
+    await ref.putFile(_imageFile!);
 
-//   Future<String> _uploadImage(File image) async {
-//     final user = _auth.currentUser;
-//     if (user != null) {
-//       final ref = _storage.ref().child('post-images/').child(user.uid + '.jpg');
-//       await ref.putFile(image);
-//       return await ref.getDownloadURL();
-//     }
-//     return '';
-//   }
-//   // Future<List<String>> _uploadImages() async {
-//   //   List<String> imageUrls = [];
-//   //   for (int i = 0; i < _images.length; i++) {
-//   //     final ref = FirebaseStorage.instance
-//   //         .ref()
-//   //         .child('post-images/')
-//   //         .child('${DateTime.now().millisecondsSinceEpoch}$i.jpg');
-//   //     final taskSnapshot = await ref.putFile(_images[i]);
-//   //     final imageUrl = await taskSnapshot.ref.getDownloadURL();
-//   //     imageUrls.add(imageUrl);
-//   //   }
-//   //   return imageUrls;
-//   // }
+    final imageUrl = await ref.getDownloadURL();
+    // ignore: deprecated_member_use
+    await user.updateProfile(photoURL: imageUrl);
+    setState(() {});
+  }
 
-//   // Future<void> _showChoiceDialog() async {
-//   //   showDialog(
-//   //     context: context,
-//   //     builder: (BuildContext context) {
-//   //       return AlertDialog(
-//   //         title: Text("Make a Choice"),
-//   //         content: SingleChildScrollView(
-//   //           child: ListBody(
-//   //             children: <Widget>[
-//   //               GestureDetector(
-//   //                 child: Text("Gallery"),
-//   //                 onTap: () {
-//   //                   _openGallery();
-//   //                 },
-//   //               ),
-//   //               Padding(padding: EdgeInsets.all(8.0)),
-//   //               GestureDetector(
-//   //                 child: Text("Camera"),
-//   //                 onTap: () {
-//   //                   _openCamera();
-//   //                 },
-//   //               ),
-//   //             ],
-//   //           ),
-//   //         ),
-//   //       );
-//   //     },
-//   //   );
-//   // }
+  void _showOptions(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Choose an option'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  GestureDetector(
+                    child: Text("Pick From Gallery"),
+                    onTap: () {
+                      _pickImage(ImageSource.gallery);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Padding(padding: EdgeInsets.all(8.0)),
+                  GestureDetector(
+                    child: Text("Take A Picture"),
+                    onTap: () {
+                      _pickImage(ImageSource.camera);
+                      Navigator.pop(context);
+                    },
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+  }
 
-//   Future<void> _pickImage() async {
-//     try {
-//       showDialog(
-//         context: context,
-//         builder: (context) => AlertDialog(
-//           title: Text('Choose Image Source'),
-//           actions: <Widget>[
-//             TextButton(
-//               child: Text('Camera'),
-//               onPressed: () async {
-//                 Navigator.of(context).pop();
-//                 final pickedFile =
-//                     await _picker.pickImage(source: ImageSource.camera);
-//                 if (pickedFile != null) {
-//                   _profileImageUrl = await _uploadImage(File(pickedFile.path));
-//                   setState(() {});
-//                 }
-//               },
-//             ),
-//             TextButton(
-//               child: Text('Gallery'),
-//               onPressed: () async {
-//                 Navigator.of(context).pop();
-//                 final pickedFile =
-//                     await _picker.pickImage(source: ImageSource.gallery);
-//                 if (pickedFile != null) {
-//                   _profileImageUrl = await _uploadImage(File(pickedFile.path));
-//                   setState(() {});
-//                 }
-//               },
-//             ),
-//             TextButton(
-//               child: Text('Cancel'),
-//               onPressed: () => Navigator.of(context).pop(),
-//             ),
-//           ],
-//         ),
-//       );
-//     } catch (e) {
-//       print('Error picking image: $e');
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('Error picking image: $e')),
-//       );
-//     }
-//   }
+  @override
+  Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
 
-//   Future<void> _updateProfile() async {
-//     if (_formKey.currentState!.validate()) {
-//       final user = _auth.currentUser;
-//       if (user != null) {
-//         await _firestore.collection('Users').doc(user.uid).set({
-//           'fullname': _fullName,
-//           'phoneNumber': _phoneNumber,
-//           'imageUrl': _profileImageUrl,
-//         }, SetOptions(merge: true));
+    ImageProvider? imageProvider;
 
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(content: Text('Profile updated')),
-//         );
-//       }
-//     }
-//   }
-// }
+    if (_imageFile != null) {
+      imageProvider = FileImage(_imageFile!);
+    } else if (user?.photoURL != null) {
+      imageProvider = CachedNetworkImageProvider(user!.photoURL!);
+    }
+
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 80,
+                  backgroundImage: imageProvider,
+                  child: _imageFile == null && user?.photoURL == null
+                      ? Icon(Icons.camera_alt, size: 80)
+                      : null,
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () {
+                      _showOptions(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+                height:
+                    20), // Add space between the profile picture and the button
+            ElevatedButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => WelcomeScreen()));
+              },
+              child: Text('Sign Out'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

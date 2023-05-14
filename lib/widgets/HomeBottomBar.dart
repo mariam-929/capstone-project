@@ -60,9 +60,9 @@ class HomeBottomBar extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
-              FirebaseAuth.instance.signOut();
+              //FirebaseAuth.instance.signOut();
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => WelcomeScreen()));
+                  MaterialPageRoute(builder: (context) => ProfilePage()));
             },
             child: Icon(
               Icons.logout_outlined,

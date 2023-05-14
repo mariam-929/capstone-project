@@ -44,39 +44,40 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBEMgTEUxh5Fl80gVH6mBbJvMBkLRbeySM',
-    appId: '1:19720031603:web:bfc7acfa0cb84db7f00906',
-    messagingSenderId: '19720031603',
-    projectId: 'caps-f938b',
-    authDomain: 'caps-f938b.firebaseapp.com',
-    storageBucket: 'caps-f938b.appspot.com',
+    apiKey: 'AIzaSyCTUfkI7rHyM6RVE3IpBHzi6XpaoMfTVTc',
+    appId: '1:1004920315658:web:93eb9fc5e95ac0bdc724f3',
+    messagingSenderId: '1004920315658',
+    projectId: 'capstone-final-aec4a',
+    authDomain: 'capstone-final-aec4a.firebaseapp.com',
+    storageBucket: 'capstone-final-aec4a.appspot.com',
+    measurementId: 'G-CDVG3TRR5P',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDlvshUQ6rwPQgUU8fN4C12KvZE3oRAyGg',
-    appId: '1:19720031603:android:5ba1b83d37ad4e79f00906',
-    messagingSenderId: '19720031603',
-    projectId: 'caps-f938b',
-    storageBucket: 'caps-f938b.appspot.com',
+    apiKey: 'AIzaSyCu6DgAKdeUGeKnAwjHMW4okIJamFCj9Qk',
+    appId: '1:1004920315658:android:fc115c25528b1f0dc724f3',
+    messagingSenderId: '1004920315658',
+    projectId: 'capstone-final-aec4a',
+    storageBucket: 'capstone-final-aec4a.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD1DnjRfA8sc5hv0GQzkxJGPapwfNw0hxE',
-    appId: '1:19720031603:ios:a0cbd57884ae27eaf00906',
-    messagingSenderId: '19720031603',
-    projectId: 'caps-f938b',
-    storageBucket: 'caps-f938b.appspot.com',
-    iosClientId: '19720031603-qg27p7rjfcnm19r2ag4gnutt4qsspia4.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDnEEuMFRAcOdvp7RQzgHyqU46O1QybFag',
+    appId: '1:1004920315658:ios:621c649345832825c724f3',
+    messagingSenderId: '1004920315658',
+    projectId: 'capstone-final-aec4a',
+    storageBucket: 'capstone-final-aec4a.appspot.com',
+    iosClientId: '1004920315658-og52pg8h14jokgkcilk2f7jvql0k4tv4.apps.googleusercontent.com',
     iosBundleId: 'com.example.firebaseAuth',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyD1DnjRfA8sc5hv0GQzkxJGPapwfNw0hxE',
-    appId: '1:19720031603:ios:a0cbd57884ae27eaf00906',
-    messagingSenderId: '19720031603',
-    projectId: 'caps-f938b',
-    storageBucket: 'caps-f938b.appspot.com',
-    iosClientId: '19720031603-qg27p7rjfcnm19r2ag4gnutt4qsspia4.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDnEEuMFRAcOdvp7RQzgHyqU46O1QybFag',
+    appId: '1:1004920315658:ios:621c649345832825c724f3',
+    messagingSenderId: '1004920315658',
+    projectId: 'capstone-final-aec4a',
+    storageBucket: 'capstone-final-aec4a.appspot.com',
+    iosClientId: '1004920315658-og52pg8h14jokgkcilk2f7jvql0k4tv4.apps.googleusercontent.com',
     iosBundleId: 'com.example.firebaseAuth',
   );
 }
