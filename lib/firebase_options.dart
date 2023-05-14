@@ -44,39 +44,39 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyADidG5W6G42S2NM22G2pP9CDQq9SjqG2A',
-    appId: '1:1096984138882:web:c28dfea2356a6efeaed09b',
-    messagingSenderId: '1096984138882',
-    projectId: 'talal814-auth-cap',
-    authDomain: 'talal814-auth-cap.firebaseapp.com',
-    storageBucket: 'talal814-auth-cap.appspot.com',
+    apiKey: 'AIzaSyBEMgTEUxh5Fl80gVH6mBbJvMBkLRbeySM',
+    appId: '1:19720031603:web:bfc7acfa0cb84db7f00906',
+    messagingSenderId: '19720031603',
+    projectId: 'caps-f938b',
+    authDomain: 'caps-f938b.firebaseapp.com',
+    storageBucket: 'caps-f938b.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBwcBJaNx5G6mBjjPHpqCpG3VCJzG8uHl0',
-    appId: '1:1096984138882:android:86862b9e302ba41faed09b',
-    messagingSenderId: '1096984138882',
-    projectId: 'talal814-auth-cap',
-    storageBucket: 'talal814-auth-cap.appspot.com',
+    apiKey: 'AIzaSyDlvshUQ6rwPQgUU8fN4C12KvZE3oRAyGg',
+    appId: '1:19720031603:android:5ba1b83d37ad4e79f00906',
+    messagingSenderId: '19720031603',
+    projectId: 'caps-f938b',
+    storageBucket: 'caps-f938b.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyByLy7OHA4tMmVTo6QbzfPjp816SIIc6UU',
-    appId: '1:1096984138882:ios:7529d18c98a53501aed09b',
-    messagingSenderId: '1096984138882',
-    projectId: 'talal814-auth-cap',
-    storageBucket: 'talal814-auth-cap.appspot.com',
-    iosClientId: '1096984138882-3mqcejc1v25o3tgtevenffdcn0jtddjl.apps.googleusercontent.com',
+    apiKey: 'AIzaSyD1DnjRfA8sc5hv0GQzkxJGPapwfNw0hxE',
+    appId: '1:19720031603:ios:a0cbd57884ae27eaf00906',
+    messagingSenderId: '19720031603',
+    projectId: 'caps-f938b',
+    storageBucket: 'caps-f938b.appspot.com',
+    iosClientId: '19720031603-qg27p7rjfcnm19r2ag4gnutt4qsspia4.apps.googleusercontent.com',
     iosBundleId: 'com.example.firebaseAuth',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyByLy7OHA4tMmVTo6QbzfPjp816SIIc6UU',
-    appId: '1:1096984138882:ios:7529d18c98a53501aed09b',
-    messagingSenderId: '1096984138882',
-    projectId: 'talal814-auth-cap',
-    storageBucket: 'talal814-auth-cap.appspot.com',
-    iosClientId: '1096984138882-3mqcejc1v25o3tgtevenffdcn0jtddjl.apps.googleusercontent.com',
+    apiKey: 'AIzaSyD1DnjRfA8sc5hv0GQzkxJGPapwfNw0hxE',
+    appId: '1:19720031603:ios:a0cbd57884ae27eaf00906',
+    messagingSenderId: '19720031603',
+    projectId: 'caps-f938b',
+    storageBucket: 'caps-f938b.appspot.com',
+    iosClientId: '19720031603-qg27p7rjfcnm19r2ag4gnutt4qsspia4.apps.googleusercontent.com',
     iosBundleId: 'com.example.firebaseAuth',
   );
 }

@@ -1,20 +1,31 @@
 class UserModel {
   String id;
-  final String firstname;
-  final String lastname;
+  final String fullname;
+  final String password;
   final String email;
-  //final String password;
+  final String? imageUrl;
+  final DateTime? dateOfBirth;
+  final String phoneNumber; // Required phone number field
 
-  UserModel(
-      {this.id = '',
-      required this.email,
-      required this.firstname,
-      required this.lastname});
+  UserModel({
+    this.id = '',
+    required this.email,
+    required this.password,
+    required this.fullname,
+    required this.phoneNumber, // Make phone number a required field
 
-  Map<String, dynamic> TOjSON() => {
+    this.imageUrl,
+    this.dateOfBirth,
+  });
+
+  Map<String, dynamic> toJson() => {
         "id": id,
-        "firstname": firstname,
-        "lastname": lastname,
+        "fullname": fullname,
         "email": email,
+        //"imageUrl": imageUrl,
+        //"dateOfBirth": dateOfBirth?.toIso8601String(),
+        "phoneNumber": phoneNumber,
+        "password": password,
+        // Include phone number in the JSON representation
       };
 }
