@@ -29,7 +29,9 @@ class SignUpScreen extends StatefulWidget {
 
   static final TextEditingController _passwordController =
       TextEditingController();
-  static final TextEditingController _phoneController = TextEditingController();
+  //static final TextEditingController _phoneController = TextEditingController();
+  static final TextEditingController _phoneNoController =
+      TextEditingController();
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -38,6 +40,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   bool _isObscure = true;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,18 +84,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
               obscureText: false,
               controller: SignUpScreen._firstnameController,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (firstname) {
-                if (firstname == "") {
+              validator: (fullname) {
+                if (fullname == "") {
                   // _emailController.clear();
                   // _passwordController.clear();
-                  return "Enter a first name";
+                  return "Enter your full name";
                 } else {
                   return null;
                 }
               },
               //autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: InputDecoration(
-                  labelText: "First Name",
+                  labelText: "Full Name",
                   labelStyle: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
@@ -112,27 +115,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       borderRadius: BorderRadius.circular(10))),
             ),
           ),
+
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: TextFormField(
-              keyboardType: TextInputType.name,
-              enableSuggestions: true,
-              autocorrect: true,
+              keyboardType: TextInputType.phone,
+              enableSuggestions: false,
+              autocorrect: false,
               obscureText: false,
-              controller: SignUpScreen._lastnameController,
+              controller: SignUpScreen._phoneNoController,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (lastname) {
-                if (lastname == "") {
-                  // _emailController.clear();
-                  // _passwordController.clear();
-                  return "Enter your last name";
-                } else {
-                  return null;
+              validator: (phone) {
+                if (phone!.isEmpty) {
+                  return 'Please enter a phone number';
                 }
+                if (!RegExp(r'^\+961[0-9]{8}$').hasMatch(phone)) {
+                  return 'Please enter a phone number in the format of "+961xxxxxxxx"';
+                }
+                return null;
               },
               //autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: InputDecoration(
-                  labelText: "Last Name",
+                  labelText: "Phone No.",
                   labelStyle: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
@@ -140,18 +144,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   enabledBorder: OutlineInputBorder(
                       borderSide:
                           const BorderSide(color: Color(0xffE8ECF4), width: 1),
-                      borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(20)),
                   fillColor: const Color(0xffE8ECF4),
                   focusedBorder: OutlineInputBorder(
                       borderSide:
                           const BorderSide(color: Color(0xffE8ECF4), width: 1),
                       borderRadius: BorderRadius.circular(10)),
                   filled: true,
-                  //hintText: "Last Name",
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10))),
+                      borderRadius: BorderRadius.circular(25))),
             ),
           ),
+
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: TextFormField(
@@ -291,7 +295,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   }
                   SignUpScreen._emailController.clear();
                   SignUpScreen._passwordController.clear();
-                  SignUpScreen._phoneController.clear();
+                  SignUpScreen._phoneNoController.clear();
+
                   SignUpScreen._firstnameController.clear();
                   SignUpScreen._lastnameController.clear();
 
@@ -451,13 +456,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final docUser =
         FirebaseFirestore.instance.collection('Users').doc(users?.uid);
     final user = UserModel(
+        password: SignUpScreen._passwordController.text,
         email: SignUpScreen._emailController.text,
-        firstname: SignUpScreen._firstnameController.text,
-        lastname: SignUpScreen._lastnameController.text,
-        // password: SignUpScreen._passwordController.text,
-        // phoneNo: SignUpScreen._phoneController.text,
+        fullname: SignUpScreen._firstnameController.text,
+        phoneNumber: SignUpScreen._phoneNoController.text,
         id: docUser.id);
-    final json = user.TOjSON();
+    final json = user.toJson();
     await docUser.set(json);
   }
 }

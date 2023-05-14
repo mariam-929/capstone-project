@@ -43,20 +43,20 @@ class HomeScreen extends StatelessWidget {
             SizedBox(
               height: 40,
             ),
-            ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size.fromHeight(50),
-                ),
-                icon: Icon(Icons.arrow_back, size: 32),
-                label: Text(
-                  "Sign Out",
-                  style: TextStyle(fontSize: 24),
-                ),
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ChatScreen()));
-                }),
+            // ElevatedButton.icon(
+            //     style: ElevatedButton.styleFrom(
+            //       minimumSize: Size.fromHeight(50),
+            //     ),
+            //     icon: Icon(Icons.arrow_back, size: 32),
+            //     label: Text(
+            //       "Sign Out",
+            //       style: TextStyle(fontSize: 24),
+            //     ),
+            //     onPressed: () {
+            //       FirebaseAuth.instance.signOut();
+            //       Navigator.push(context,
+            //           MaterialPageRoute(builder: (context) => ChatScreen()));
+            //     }),
             // ElevatedButton.icon(
             //     style: ElevatedButton.styleFrom(
             //       minimumSize: Size.fromHeight(50),

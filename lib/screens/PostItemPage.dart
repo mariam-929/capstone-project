@@ -113,45 +113,6 @@ class _PostItemPageState extends State<PostItemPage> {
                               borderRadius: BorderRadius.circular(25))),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.phone,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      obscureText: false,
-                      controller: _phoneNoController,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (phone) {
-                        if (phone!.isEmpty) {
-                          return 'Please enter a phone number';
-                        }
-                        if (!RegExp(r'^\+961[0-9]{8}$').hasMatch(phone)) {
-                          return 'Please enter a phone number in the format of "+961xxxxxxxx"';
-                        }
-                        return null;
-                      },
-                      //autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration: InputDecoration(
-                          labelText: "Phone No.",
-                          labelStyle: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Color(0xffE8ECF4), width: 1),
-                              borderRadius: BorderRadius.circular(20)),
-                          fillColor: const Color(0xffE8ECF4),
-                          focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Color(0xffE8ECF4), width: 1),
-                              borderRadius: BorderRadius.circular(10)),
-                          filled: true,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25))),
-                    ),
-                  ),
 
                   Padding(
                     padding: const EdgeInsets.all(10.0),
@@ -519,29 +480,5 @@ class _PostItemPageState extends State<PostItemPage> {
       imageUrls.add(imageUrl);
     }
     return imageUrls;
-  }
-
-  Future<void> requestPermission() async {
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.camera,
-      Permission.photos,
-    ].request();
-    if (statuses[Permission.camera] != PermissionStatus.granted ||
-        statuses[Permission.photos] != PermissionStatus.granted) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: Text("Permission required"),
-          content: Text(
-              "Please allow access to the camera and photo gallery to use this feature."),
-          actions: <Widget>[
-            TextButton(
-              child: Text("OK"),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        ),
-      );
-    }
   }
 }

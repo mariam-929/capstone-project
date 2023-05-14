@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth101/screens/ItemListing.dart';
 import 'package:firebase_auth101/screens/PostItemPage.dart';
+import 'package:firebase_auth101/screens/editProfile.dart';
 import 'package:firebase_auth101/screens/home_screen.dart';
 import 'package:firebase_auth101/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
@@ -59,11 +60,9 @@ class HomeBottomBar extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
-              FirebaseAuth.instance.signOut();
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const WelcomeScreen()));
+              //FirebaseAuth.instance.signOut();
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()));
             },
             child: Icon(
               Icons.logout_outlined,

@@ -44,39 +44,40 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyADidG5W6G42S2NM22G2pP9CDQq9SjqG2A',
-    appId: '1:1096984138882:web:c28dfea2356a6efeaed09b',
-    messagingSenderId: '1096984138882',
-    projectId: 'talal814-auth-cap',
-    authDomain: 'talal814-auth-cap.firebaseapp.com',
-    storageBucket: 'talal814-auth-cap.appspot.com',
+    apiKey: 'AIzaSyCTUfkI7rHyM6RVE3IpBHzi6XpaoMfTVTc',
+    appId: '1:1004920315658:web:93eb9fc5e95ac0bdc724f3',
+    messagingSenderId: '1004920315658',
+    projectId: 'capstone-final-aec4a',
+    authDomain: 'capstone-final-aec4a.firebaseapp.com',
+    storageBucket: 'capstone-final-aec4a.appspot.com',
+    measurementId: 'G-CDVG3TRR5P',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBwcBJaNx5G6mBjjPHpqCpG3VCJzG8uHl0',
-    appId: '1:1096984138882:android:86862b9e302ba41faed09b',
-    messagingSenderId: '1096984138882',
-    projectId: 'talal814-auth-cap',
-    storageBucket: 'talal814-auth-cap.appspot.com',
+    apiKey: 'AIzaSyCu6DgAKdeUGeKnAwjHMW4okIJamFCj9Qk',
+    appId: '1:1004920315658:android:fc115c25528b1f0dc724f3',
+    messagingSenderId: '1004920315658',
+    projectId: 'capstone-final-aec4a',
+    storageBucket: 'capstone-final-aec4a.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyByLy7OHA4tMmVTo6QbzfPjp816SIIc6UU',
-    appId: '1:1096984138882:ios:7529d18c98a53501aed09b',
-    messagingSenderId: '1096984138882',
-    projectId: 'talal814-auth-cap',
-    storageBucket: 'talal814-auth-cap.appspot.com',
-    iosClientId: '1096984138882-3mqcejc1v25o3tgtevenffdcn0jtddjl.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDnEEuMFRAcOdvp7RQzgHyqU46O1QybFag',
+    appId: '1:1004920315658:ios:621c649345832825c724f3',
+    messagingSenderId: '1004920315658',
+    projectId: 'capstone-final-aec4a',
+    storageBucket: 'capstone-final-aec4a.appspot.com',
+    iosClientId: '1004920315658-og52pg8h14jokgkcilk2f7jvql0k4tv4.apps.googleusercontent.com',
     iosBundleId: 'com.example.firebaseAuth',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyByLy7OHA4tMmVTo6QbzfPjp816SIIc6UU',
-    appId: '1:1096984138882:ios:7529d18c98a53501aed09b',
-    messagingSenderId: '1096984138882',
-    projectId: 'talal814-auth-cap',
-    storageBucket: 'talal814-auth-cap.appspot.com',
-    iosClientId: '1096984138882-3mqcejc1v25o3tgtevenffdcn0jtddjl.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDnEEuMFRAcOdvp7RQzgHyqU46O1QybFag',
+    appId: '1:1004920315658:ios:621c649345832825c724f3',
+    messagingSenderId: '1004920315658',
+    projectId: 'capstone-final-aec4a',
+    storageBucket: 'capstone-final-aec4a.appspot.com',
+    iosClientId: '1004920315658-og52pg8h14jokgkcilk2f7jvql0k4tv4.apps.googleusercontent.com',
     iosBundleId: 'com.example.firebaseAuth',
   );
 }
