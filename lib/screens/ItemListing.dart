@@ -58,44 +58,41 @@ class _ItemListingState extends State<ItemListing> {
               return GFCard(
                 boxFit: BoxFit.cover,
                 titlePosition: GFPosition.start,
-                image: Image.network(
-                  item['image_urls'][0],
-                  height: MediaQuery.of(context).size.height * 0.35,
-                  width: MediaQuery.of(context).size.width,
-                  fit: BoxFit.cover,
-                ),
+                // image: Image.network(
+                //   item ['image_urls'][0],
+                //   height: MediaQuery.of(context).size.height * 0.35,
+                //   width: MediaQuery.of(context).size.width,
+                //   fit: BoxFit.cover,
+                // ),
                 showImage: true,
                 title: GFListTile(
                   titleText: item['title'],
                   subTitleText: "by ${item['full_name']}",
                 ),
-                content: Text("Some quick example text to build on the card"),
+
                 buttonBar: GFButtonBar(
                   children: <Widget>[
-                    GFAvatar(
-                      backgroundColor: GFColors.PRIMARY,
-                      child: Icon(
-                        Icons.share,
-                        color: Colors.white,
-                      ),
-                    ),
-                    GFAvatar(
-                      backgroundColor: GFColors.SECONDARY,
-                      child: Icon(
-                        Icons.search,
-                        color: Colors.white,
-                      ),
-                    ),
-                    GFAvatar(
-                      backgroundColor: GFColors.SUCCESS,
-                      child: Icon(
-                        Icons.phone,
-                        color: Colors.white,
-                      ),
-                    ),
+                    GFListTile(
+                        avatar: GFAvatar(
+                          backgroundImage: AssetImage('assets/location.png'),
+                        ),
+                        titleText: 'Title',
+                        subTitleText:
+                            'Lorem ipsum dolor sit amet, consectetur adipiscing',
+                       // icon: Icon(Icons.favorite)
+                        ),
                   ],
                 ),
               );
+              onTap:
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ItemDetails(item: item[index]),
+                  ),
+                );
+              };
             },
             separatorBuilder: (context, index) {
               return Divider(
@@ -105,7 +102,6 @@ class _ItemListingState extends State<ItemListing> {
           );
         },
       ),
-     
       bottomNavigationBar: HomeBottomBar(),
     );
   }

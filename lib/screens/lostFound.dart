@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../constraints/items.dart';
 import '../widgets/HomeBottomBar.dart';
 import 'itemDetails.dart';
+
 import 'package:getwidget/getwidget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -13,16 +14,24 @@ class lostFound extends StatelessWidget {
       body: ListView.separated(
         itemCount: 2,
         itemBuilder: (context, index) {
-          return GFCard(
-            color: Color.fromARGB(255, 188, 154, 230),
-            borderRadius: BorderRadius.circular(10),
+          return const GFCard(
+            color: Color.fromARGB(255, 209, 185, 250),
+             borderRadius: BorderRadius.horizontal(
+                    left: Radius.circular(15),
+                    right: Radius.circular(30),
+                  ),
             height: 210,
             //boxFit: BoxFit.cover,
             titlePosition: GFPosition.start,
             //showOverlayImage: true,
             title: GFListTile(
-              avatar: GFAvatar(),
-              titleText: 'Game Controllers',
+              avatar: GFAvatar(
+                backgroundImage: AssetImage('assets/lost-and-found.png'),
+                
+                shape: GFAvatarShape.square,
+                backgroundColor: Color.fromARGB(255, 209, 185, 250),
+              ),
+              titleText: 'Lost',
               subTitleText: 'PlayStation 4',
             ),
             content: Text("Some quick example text to build on the card"),

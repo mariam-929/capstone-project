@@ -51,7 +51,7 @@ class HomeBottomBar extends StatelessWidget {
           InkWell(
             onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => lostFound()));
+                  MaterialPageRoute(builder: (context) => ItemListing()));
             },
             child: Icon(
               Icons.shopping_cart,
