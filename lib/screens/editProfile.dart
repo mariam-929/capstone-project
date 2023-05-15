@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -14,6 +16,91 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   File? _imageFile;
   final picker = ImagePicker();
+  TextEditingController _fullNameController = TextEditingController();
+  TextEditingController _phoneNumberController = TextEditingController();
+  TextEditingController _dateOfBirthController = TextEditingController();
+  DateTime? _dateOfBirth;
+
+  @override
+  void initState() {
+    super.initState();
+    _readUserInfo();
+  }
+
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _phoneNumberController.dispose();
+    _dateOfBirthController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _readUserInfo() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(user.uid)
+          .get();
+      if (doc.exists) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        _fullNameController.text = data['fullname'];
+        _phoneNumberController.text = data['phoneNumber'];
+        _dateOfBirthController.text = data['dateOfBirth'];
+
+        // Set user photoURL to local state if it exists in Firestore
+        if (data['imageUrl'] != null) {
+          // ignore: deprecated_member_use
+          user.updateProfile(photoURL: data['imageUrl']);
+        }
+      }
+    }
+  }
+
+  Future<void> _updateUserInfo() async {
+    if (_fullNameController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Full name cannot be empty.'),
+        ),
+      );
+      return;
+    }
+
+    if (_phoneNumberController.text.isEmpty ||
+        !RegExp(r'^\+961[0-9]{8}$').hasMatch(_phoneNumberController.text)) {
+      // +961 followed by 8 digits
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'Phone number must start with +961 and followed by 8 digits.'),
+        ),
+      );
+      return;
+    }
+
+    if (_dateOfBirth == null ||
+        DateTime.now().difference(_dateOfBirth!).inDays ~/ 365 < 18) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('You must be at least 18 years old.'),
+        ),
+      );
+      return;
+    }
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(user.uid)
+          .update({
+        'fullname': _fullNameController.text,
+        'phoneNumber': _phoneNumberController.text,
+        'dateOfBirth': _dateOfBirth?.toIso8601String(),
+      });
+    }
+  }
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await picker.pickImage(source: source);
@@ -39,9 +126,41 @@ class _ProfilePageState extends State<ProfilePage> {
     await ref.putFile(_imageFile!);
 
     final imageUrl = await ref.getDownloadURL();
-    // ignore: deprecated_member_use
+    // Update photoURL in Firebase Auth user profile
     await user.updateProfile(photoURL: imageUrl);
+
+    // Update photoURL in Firestore database
+    await FirebaseFirestore.instance.collection('Users').doc(user.uid).update({
+      'imageUrl': imageUrl,
+    });
+
     setState(() {});
+  }
+
+  void _deleteImage() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user?.photoURL != null) {
+      Reference photoRef = FirebaseStorage.instance.refFromURL(user!.photoURL!);
+
+      // Deletes the file from Firebase Storage
+      await photoRef.delete();
+
+      // Update photoURL in Firebase Auth user profile
+      await user.updateProfile(photoURL: null);
+
+      // Update photoURL in Firestore database
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(user.uid)
+          .update({
+        'imageUrl': null,
+      });
+
+      setState(() {
+        _imageFile = null;
+      });
+    }
   }
 
   void _showOptions(BuildContext context) {
@@ -67,12 +186,33 @@ class _ProfilePageState extends State<ProfilePage> {
                       _pickImage(ImageSource.camera);
                       Navigator.pop(context);
                     },
+                  ),
+                  Padding(padding: EdgeInsets.all(8.0)),
+                  GestureDetector(
+                    child: Text("Remove Picture"),
+                    onTap: () {
+                      _deleteImage();
+                      Navigator.pop(context);
+                    },
                   )
                 ],
               ),
             ),
           );
         });
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: _dateOfBirth ?? DateTime.now(),
+        firstDate: DateTime(1900, 1),
+        lastDate: DateTime.now());
+    if (picked != null && picked != _dateOfBirth)
+      setState(() {
+        _dateOfBirth = picked;
+        _dateOfBirthController.text = DateFormat('dd/MM/yyyy').format(picked);
+      });
   }
 
   @override
@@ -88,42 +228,77 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     return Scaffold(
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 80,
-                  backgroundImage: imageProvider,
-                  child: _imageFile == null && user?.photoURL == null
-                      ? Icon(Icons.camera_alt, size: 80)
-                      : null,
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      _showOptions(context);
-                    },
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 50, 0, 0),
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: imageProvider,
+                    child: _imageFile == null && user?.photoURL == null
+                        ? Icon(Icons.camera_alt, size: 80)
+                        : null,
                   ),
-                ),
-              ],
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: Transform.translate(
+                        offset: Offset(15, 15),
+                        child: IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            _showOptions(context);
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             SizedBox(
-                height:
-                    20), // Add space between the profile picture and the button
-            ElevatedButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => WelcomeScreen()));
+              height: 20,
+            ),
+            TextField(
+              controller: _fullNameController,
+              decoration: InputDecoration(
+                labelText: "Full Name",
+              ),
+            ),
+            TextField(
+              controller: _phoneNumberController,
+              decoration: InputDecoration(
+                labelText: "Phone Number",
+              ),
+            ),
+            TextField(
+              controller: _dateOfBirthController,
+              decoration: InputDecoration(
+                labelText: "Date of Birth",
+              ),
+              onTap: () {
+                _selectDate(context);
               },
-              child: Text('Sign Out'),
+            ),
+            ElevatedButton(
+              onPressed: _updateUserInfo,
+              child: Text('Save Changes'),
+            ),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => WelcomeScreen()));
+                },
+                child: Text('Sign Out'),
+              ),
             ),
           ],
         ),

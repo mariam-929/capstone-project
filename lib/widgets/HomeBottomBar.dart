@@ -5,6 +5,9 @@ import 'package:firebase_auth101/screens/home_screen.dart';
 import 'package:firebase_auth101/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
+import '../screens/address.dart';
+import '../screens/editProfile.dart';
+import '../screens/location_search_screen.dart';
 import '../screens/lostFound.dart';
 
 class HomeBottomBar extends StatelessWidget {
@@ -50,8 +53,10 @@ class HomeBottomBar extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ItemListing()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SearchLocationScreen()));
             },
             child: Icon(
               Icons.shopping_cart,
@@ -61,11 +66,9 @@ class HomeBottomBar extends StatelessWidget {
           ),
           InkWell(
             onTap: () {
-              FirebaseAuth.instance.signOut();
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const WelcomeScreen()));
+              //FirebaseAuth.instance.signOut();
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()));
             },
             child: Icon(
               Icons.logout_outlined,

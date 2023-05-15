@@ -4,28 +4,26 @@ class UserModel {
   final String password;
   final String email;
   final String? imageUrl;
-  final DateTime? dateOfBirth;
-  final String phoneNumber; // Required phone number field
+  final String? dateOfBirth; // Add this line
+  final String phoneNumber;
 
   UserModel({
     this.id = '',
     required this.email,
     required this.password,
     required this.fullname,
-    required this.phoneNumber, // Make phone number a required field
-
+    required this.phoneNumber,
     this.imageUrl,
-    this.dateOfBirth,
+    this.dateOfBirth, // And this line
   });
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "fullname": fullname,
         "email": email,
-        //"imageUrl": imageUrl,
-        //"dateOfBirth": dateOfBirth?.toIso8601String(),
         "phoneNumber": phoneNumber,
         "password": password,
-        // Include phone number in the JSON representation
+        "imageUrl": imageUrl,
+        "dateOfBirth": dateOfBirth, // And this line
       };
 }
