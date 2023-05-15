@@ -22,7 +22,7 @@ class UserModel {
         "id": id,
         "fullname": fullname,
         "email": email,
-        //"imageUrl": imageUrl,
+        "imageUrl": imageUrl,
         //"dateOfBirth": dateOfBirth?.toIso8601String(),
         "phoneNumber": phoneNumber,
         "password": password,

@@ -449,6 +449,7 @@ class _PostItemPageState extends State<PostItemPage> {
         'description': description,
         'post_type': _postType,
         'image_urls': imageUrls,
+        'address' : String,
       };
       await collection.add(entryData);
 

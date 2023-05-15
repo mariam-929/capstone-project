@@ -50,7 +50,8 @@ dependencies:
   permission_handler: ^8.1.4
   image_picker: ^0.8.7+4
 
-
+  flutter_google_places: "^0.3.0"
+  google_maps_webservice: "^0.0.19"
   get: ^4.6.5
   firebase_storage: ^11.2.0
   cloud_firestore: ^4.7.0
@@ -58,6 +59,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
