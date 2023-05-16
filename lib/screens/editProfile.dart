@@ -46,7 +46,13 @@ class _ProfilePageState extends State<ProfilePage> {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         _fullNameController.text = data['fullname'];
         _phoneNumberController.text = data['phoneNumber'];
-        _dateOfBirthController.text = data['dateOfBirth'];
+
+        // Parse ISO 8601 string to DateTime object
+        _dateOfBirth = DateTime.parse(data['dateOfBirth']);
+
+        // Format DateTime object to "dd/MM/yyyy"
+        _dateOfBirthController.text =
+            DateFormat('dd/MM/yyyy').format(_dateOfBirth!);
 
         // Set user photoURL to local state if it exists in Firestore
         if (data['imageUrl'] != null) {

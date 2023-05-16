@@ -4,7 +4,6 @@ import 'package:firebase_auth101/screens/PostItemPage.dart';
 import 'package:firebase_auth101/screens/home_screen.dart';
 import 'package:firebase_auth101/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
-
 import '../screens/address.dart';
 import '../screens/editProfile.dart';
 import '../screens/location_search_screen.dart';
