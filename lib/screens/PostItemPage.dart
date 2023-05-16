@@ -26,6 +26,7 @@ class _PostItemPageState extends State<PostItemPage> {
   String _postType = "Found";
   List<File> _images = [];
   final ImagePicker _picker = ImagePicker();
+  String _locationText = 'Add Location'; // State variable for the button text
 
   @override
   Widget build(BuildContext context) {
@@ -270,21 +271,47 @@ class _PostItemPageState extends State<PostItemPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Container(
-                        width: double
-                            .infinity, // this will make the button take the full width available
+                        width: double.infinity,
+                        height: 65,
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
+                          onPressed: () async {
+                            final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => SearchLocationScreen()),
                             );
+                            if (result != null) {
+                              setState(() {
+                                _locationText = result;
+                              });
+                            }
                           },
-                          child: Text(
-                            'Add Location',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      _locationText,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow
+                                          .ellipsis, // Adds an ellipsis when the text overflows
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios_sharp,
+                                    color: Colors.black,
+                                    size: 12,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           style: ButtonStyle(
@@ -298,10 +325,7 @@ class _PostItemPageState extends State<PostItemPage> {
                             ),
                             backgroundColor: MaterialStateProperty.all<Color>(
                                 Color(0xffE8ECF4)),
-                            padding:
-                                MaterialStateProperty.all<EdgeInsetsGeometry>(
-                              EdgeInsets.all(10),
-                            ),
+                            elevation: MaterialStateProperty.all<double>(0),
                           ),
                         ),
                       ),
@@ -492,7 +516,7 @@ class _PostItemPageState extends State<PostItemPage> {
         'description': description,
         'post_type': _postType,
         'image_urls': imageUrls,
-        'address': String,
+        'address': _locationText,
       };
       await collection.add(entryData);
 

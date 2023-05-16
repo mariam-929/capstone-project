@@ -78,7 +78,10 @@ class _SearchLocationScreenState extends State<SearchLocationScreen> {
           Padding(
             padding: const EdgeInsets.all(10),
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pop(context,
+                    searchController.text); // Pass back the selected location
+              },
               child: const Text('Select Address'),
             ),
           ),
