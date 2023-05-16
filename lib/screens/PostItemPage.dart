@@ -1,12 +1,14 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:getwidget/components/button/gf_button.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../widgets/customized_button.dart';
+import 'location_search_screen.dart';
 
 class PostItemPage extends StatefulWidget {
   @override
@@ -264,6 +266,47 @@ class _PostItemPageState extends State<PostItemPage> {
                               borderRadius: BorderRadius.circular(25))),
                     ),
                   ),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Container(
+                        width: double
+                            .infinity, // this will make the button take the full width available
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SearchLocationScreen()),
+                            );
+                          },
+                          child: Text(
+                            'Add Location',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                                side: BorderSide(
+                                    color: Color(0xffE8ECF4), width: 1),
+                              ),
+                            ),
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                Color(0xffE8ECF4)),
+                            padding:
+                                MaterialStateProperty.all<EdgeInsetsGeometry>(
+                              EdgeInsets.all(10),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
 
                   SizedBox(height: 16),
                   Padding(
@@ -449,6 +492,7 @@ class _PostItemPageState extends State<PostItemPage> {
         'description': description,
         'post_type': _postType,
         'image_urls': imageUrls,
+        'address': String,
       };
       await collection.add(entryData);
 
