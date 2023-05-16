@@ -48,10 +48,11 @@ dependencies:
   #cloud_firestore: ^4.5.0
  # firebase_storage: ^11.1.1
   permission_handler: ^8.1.4
-  image_picker: ^0.8.7+4
-
   flutter_google_places: "^0.3.0"
   google_maps_webservice: "^0.0.19"
+  image_picker: ^0.8.7+4
+
+  
   get: ^4.6.5
   firebase_storage: ^11.2.0
   cloud_firestore: ^4.7.0

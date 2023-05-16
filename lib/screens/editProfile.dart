@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:io';
 import 'package:firebase_auth101/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -19,6 +18,8 @@ class _ProfilePageState extends State<ProfilePage> {
   final picker = ImagePicker();
   TextEditingController _fullNameController = TextEditingController();
   TextEditingController _phoneNumberController = TextEditingController();
+  TextEditingController _dateOfBirthController = TextEditingController();
+  DateTime? _dateOfBirth;
 
   @override
   void initState() {
@@ -30,18 +31,29 @@ class _ProfilePageState extends State<ProfilePage> {
   void dispose() {
     _fullNameController.dispose();
     _phoneNumberController.dispose();
+    _dateOfBirthController.dispose();
     super.dispose();
   }
 
- Future<void> _readUserInfo() async {
+  Future<void> _readUserInfo() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      DocumentSnapshot doc = await FirebaseFirestore.instance.collection('Users').doc(user.uid).get();
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(user.uid)
+          .get();
       if (doc.exists) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
         _fullNameController.text = data['fullname'];
         _phoneNumberController.text = data['phoneNumber'];
-        
+
+        // Parse ISO 8601 string to DateTime object
+        _dateOfBirth = DateTime.parse(data['dateOfBirth']);
+
+        // Format DateTime object to "dd/MM/yyyy"
+        _dateOfBirthController.text =
+            DateFormat('dd/MM/yyyy').format(_dateOfBirth!);
+
         // Set user photoURL to local state if it exists in Firestore
         if (data['imageUrl'] != null) {
           // ignore: deprecated_member_use
@@ -52,11 +64,46 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _updateUserInfo() async {
+    if (_fullNameController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Full name cannot be empty.'),
+        ),
+      );
+      return;
+    }
+
+    if (_phoneNumberController.text.isEmpty ||
+        !RegExp(r'^\+961[0-9]{8}$').hasMatch(_phoneNumberController.text)) {
+      // +961 followed by 8 digits
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'Phone number must start with +961 and followed by 8 digits.'),
+        ),
+      );
+      return;
+    }
+
+    if (_dateOfBirth == null ||
+        DateTime.now().difference(_dateOfBirth!).inDays ~/ 365 < 18) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('You must be at least 18 years old.'),
+        ),
+      );
+      return;
+    }
+
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      await FirebaseFirestore.instance.collection('Users').doc(user.uid).update({
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(user.uid)
+          .update({
         'fullname': _fullNameController.text,
         'phoneNumber': _phoneNumberController.text,
+        'dateOfBirth': _dateOfBirth?.toIso8601String(),
       });
     }
   }
@@ -71,7 +118,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _uploadImage();
   }
 
- Future<void> _uploadImage() async {
+  Future<void> _uploadImage() async {
     if (_imageFile == null) {
       return;
     }
@@ -96,29 +143,31 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {});
   }
 
-void _deleteImage() async {
-  final user = FirebaseAuth.instance.currentUser;
+  void _deleteImage() async {
+    final user = FirebaseAuth.instance.currentUser;
 
-  if (user?.photoURL != null) {
-    Reference photoRef = FirebaseStorage.instance.refFromURL(user!.photoURL!);
+    if (user?.photoURL != null) {
+      Reference photoRef = FirebaseStorage.instance.refFromURL(user!.photoURL!);
 
-    // Deletes the file from Firebase Storage
-    await photoRef.delete();
+      // Deletes the file from Firebase Storage
+      await photoRef.delete();
 
-    // Update photoURL in Firebase Auth user profile
-    await user.updateProfile(photoURL: null);
+      // Update photoURL in Firebase Auth user profile
+      await user.updateProfile(photoURL: null);
 
-    // Update photoURL in Firestore database
-    await FirebaseFirestore.instance.collection('Users').doc(user.uid).update({
-      'imageUrl': null,
-    });
+      // Update photoURL in Firestore database
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(user.uid)
+          .update({
+        'imageUrl': null,
+      });
 
-    setState(() {
-      _imageFile = null;
-    });
+      setState(() {
+        _imageFile = null;
+      });
+    }
   }
-}
-
 
   void _showOptions(BuildContext context) {
     showDialog(
@@ -144,7 +193,7 @@ void _deleteImage() async {
                       Navigator.pop(context);
                     },
                   ),
-                                   Padding(padding: EdgeInsets.all(8.0)),
+                  Padding(padding: EdgeInsets.all(8.0)),
                   GestureDetector(
                     child: Text("Remove Picture"),
                     onTap: () {
@@ -157,6 +206,19 @@ void _deleteImage() async {
             ),
           );
         });
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: _dateOfBirth ?? DateTime.now(),
+        firstDate: DateTime(1900, 1),
+        lastDate: DateTime.now());
+    if (picked != null && picked != _dateOfBirth)
+      setState(() {
+        _dateOfBirth = picked;
+        _dateOfBirthController.text = DateFormat('dd/MM/yyyy').format(picked);
+      });
   }
 
   @override
@@ -208,7 +270,7 @@ void _deleteImage() async {
             ),
             SizedBox(
               height: 20,
-            ), // Add space between the profile picture and the button
+            ),
             TextField(
               controller: _fullNameController,
               decoration: InputDecoration(
@@ -220,6 +282,15 @@ void _deleteImage() async {
               decoration: InputDecoration(
                 labelText: "Phone Number",
               ),
+            ),
+            TextField(
+              controller: _dateOfBirthController,
+              decoration: InputDecoration(
+                labelText: "Date of Birth",
+              ),
+              onTap: () {
+                _selectDate(context);
+              },
             ),
             ElevatedButton(
               onPressed: _updateUserInfo,
@@ -241,4 +312,3 @@ void _deleteImage() async {
     );
   }
 }
-
