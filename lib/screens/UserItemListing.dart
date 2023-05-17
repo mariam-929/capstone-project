@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../constraints/items.dart';
 import '../widgets/HomeBottomBar.dart';
+
 import 'itemDetails.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -12,12 +13,12 @@ import 'location_search_screen.dart';
 import 'package:intl/intl.dart'; // Add this line
 import 'package:firebase_storage/firebase_storage.dart';
 
-class ItemListing extends StatefulWidget {
+class UserItemListing extends StatefulWidget {
   @override
   _ItemListingState createState() => _ItemListingState();
 }
 
-class _ItemListingState extends State<ItemListing> {
+class _ItemListingState extends State<UserItemListing> {
   TextEditingController _searchController = TextEditingController();
   String title = "";
   String selectedCategory = 'All';
@@ -227,8 +228,12 @@ class _ItemListingState extends State<ItemListing> {
           ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance.collection('Posts').snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection('Posts')
+                  .where('id',
+                      isEqualTo: FirebaseAuth.instance.currentUser!
+                          .uid) // Filter by current user ID
+                  .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {

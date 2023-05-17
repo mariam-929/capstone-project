@@ -3,7 +3,7 @@ class UserModel {
   final String fullname;
   final String password;
   final String email;
-  final String? imageUrl;
+  String imageUrl;
   final String? dateOfBirth; // Add this line
   final String phoneNumber;
 
@@ -13,7 +13,7 @@ class UserModel {
     required this.password,
     required this.fullname,
     required this.phoneNumber,
-    this.imageUrl,
+    this.imageUrl = '',
     this.dateOfBirth, // And this line
   });
 

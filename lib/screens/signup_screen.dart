@@ -460,6 +460,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         email: SignUpScreen._emailController.text,
         fullname: SignUpScreen._firstnameController.text,
         phoneNumber: SignUpScreen._phoneNoController.text,
+        imageUrl:
+            "https://cdn.discordapp.com/attachments/843669076051755111/1107995852691230800/avatar.jpg",
         id: docUser.id);
     final json = user.toJson();
     await docUser.set(json);

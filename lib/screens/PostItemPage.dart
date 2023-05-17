@@ -21,12 +21,40 @@ class _PostItemPageState extends State<PostItemPage> {
   final TextEditingController _phoneNoController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  late var counter = 0;
 
   String _category = "Category 1";
   String _postType = "Found";
   List<File> _images = [];
   final ImagePicker _picker = ImagePicker();
-  String _locationText = 'Add Location'; // State variable for the button text
+  String _locationText = '';
+  String FULLNAME = '';
+  String PHONE = ''; // State variable for the button text
+  Future<String?> getUserFullName(String userID) async {
+    DocumentSnapshot userSnapshot =
+        await FirebaseFirestore.instance.collection('Users').doc(userID).get();
+
+    if (userSnapshot.exists) {
+      Map<String, dynamic> userData =
+          userSnapshot.data() as Map<String, dynamic>;
+      return userData['fullname'];
+    }
+
+    return null;
+  }
+
+  Future<String?> getUserPhone(String userID) async {
+    DocumentSnapshot userSnapshot =
+        await FirebaseFirestore.instance.collection('Users').doc(userID).get();
+
+    if (userSnapshot.exists) {
+      Map<String, dynamic> userData =
+          userSnapshot.data() as Map<String, dynamic>;
+      return userData['phoneNumber'];
+    }
+
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,17 +69,19 @@ class _PostItemPageState extends State<PostItemPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
                         icon: Icon(Icons.arrow_back_ios_sharp,
                             color: Colors.black),
                         onPressed: () => Navigator.of(context).pop(),
                       ),
-                      // SizedBox(width: 2),
-                      Text(
-                        'Home',
-                        style: TextStyle(fontSize: 18, color: Colors.black),
+                      IconButton(
+                        icon: Icon(Icons.info_outline),
+                        onPressed: () {
+                          counter = counter + 1;
+                          _showInfoModal(context);
+                        },
                       ),
                     ],
                   ),
@@ -65,58 +95,34 @@ class _PostItemPageState extends State<PostItemPage> {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  // Container(
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.white,
-                  //     borderRadius: BorderRadius.circular(8),
-                  //   ),
-                  //   child: TextFormField(
-                  //     controller: _fullNameController,
-                  //     decoration: InputDecoration(labelText: 'Full Name'),
-                  //     validator: (value) =>
-                  //         value!.isEmpty ? 'Full Name is required' : null,
-                  //   ),
-                  // ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.text,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      obscureText: false,
-                      controller: _fullNameController,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (name) {
-                        if (name == "") {
-                          // _emailController.clear();
-                          // _passwordController.clear();
-                          return "Please Enter full name";
-                        } else {
-                          return null;
-                        }
-                      },
-                      //autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration: InputDecoration(
-                          labelText: "Full Name",
-                          labelStyle: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Color(0xffE8ECF4), width: 1),
-                              borderRadius: BorderRadius.circular(20)),
-                          fillColor: const Color(0xffE8ECF4),
-                          focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Color(0xffE8ECF4), width: 1),
-                              borderRadius: BorderRadius.circular(10)),
-                          filled: true,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25))),
-                    ),
+                  FutureBuilder<String?>(
+                    future:
+                        getUserFullName(FirebaseAuth.instance.currentUser!.uid),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        FULLNAME = snapshot.data!;
+                        // Do any additional processing or operations with the fullName variable if needed
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      }
+                      return const SizedBox
+                          .shrink(); // Return an empty widget or null
+                    },
                   ),
-
+                  FutureBuilder<String?>(
+                    future:
+                        getUserPhone(FirebaseAuth.instance.currentUser!.uid),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        PHONE = snapshot.data!;
+                        // Do any additional processing or operations with the fullName variable if needed
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      }
+                      return const SizedBox
+                          .shrink(); // Return an empty widget or null
+                    },
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: TextFormField(
@@ -233,7 +239,6 @@ class _PostItemPageState extends State<PostItemPage> {
                           value == null ? 'Category is required' : null,
                     ),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: DropdownButtonFormField<String>(
@@ -296,13 +301,14 @@ class _PostItemPageState extends State<PostItemPage> {
                                 children: [
                                   Flexible(
                                     child: Text(
-                                      _locationText,
+                                      _locationText.isEmpty
+                                          ? "Choose your location..."
+                                          : _locationText, // Display a placeholder if _locationText is empty
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
                                       ),
-                                      overflow: TextOverflow
-                                          .ellipsis, // Adds an ellipsis when the text overflows
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                   Icon(
@@ -319,8 +325,7 @@ class _PostItemPageState extends State<PostItemPage> {
                                 RoundedRectangleBorder>(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25),
-                                side: BorderSide(
-                                    color: Color(0xffE8ECF4), width: 1),
+                                side: BorderSide(color: Color(0xffE8ECF4)),
                               ),
                             ),
                             backgroundColor: MaterialStateProperty.all<Color>(
@@ -331,7 +336,6 @@ class _PostItemPageState extends State<PostItemPage> {
                       ),
                     ),
                   ),
-
                   SizedBox(height: 16),
                   Padding(
                     padding: const EdgeInsets.all(10.0),
@@ -348,7 +352,40 @@ class _PostItemPageState extends State<PostItemPage> {
                       height: 60,
                       width: MediaQuery.of(context).size.width,
                       child: ElevatedButton(
-                        onPressed: _submitForm,
+                        onPressed: () {
+                          if (_postType == "Found") {
+                            if (counter >= 1) {
+                              _submitForm();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      'You need to provide more information.'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            }
+                          } else {
+                            _submitForm();
+                          }
+                        },
+                        //   onPressed: () {
+                        //   if (_postType == "Found") {
+                        //     if (counter >= 1) {
+                        //       _submitForm;
+                        //     } else {
+                        //       ScaffoldMessenger.of(context).showSnackBar(
+                        //         SnackBar(
+                        //           content: Text(
+                        //               'You need to provide more information.'),
+                        //           duration: Duration(seconds: 2),
+                        //         ),
+                        //       );
+                        //     }
+                        //   } else {
+                        //     _submitForm;
+                        //   }
+                        // },
                         child: Text(
                           'Post Item',
                           style: TextStyle(
@@ -371,15 +408,6 @@ class _PostItemPageState extends State<PostItemPage> {
                         ),
                       ),
                     ),
-                    // child: CustomizedButton(
-                    //   buttonText: "Post Item",
-                    //   buttonColor: Color.fromARGB(255, 255, 203, 72),
-                    //   textColor: Colors.white,
-                    //   isEmail: false,
-                    //   onPressed: () async {
-                    //     _submitForm;
-                    //   },
-                    // ),
                   ),
                 ],
               ),
@@ -430,25 +458,6 @@ class _PostItemPageState extends State<PostItemPage> {
     );
   }
 
-  // Future<void> _pickImage() async {
-  //   final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-  //   if (pickedFile != null) {
-  //     setState(() => _images.add(File(pickedFile.path)));
-  //   }
-  // }
-  // Future<void> _pickImage() async {
-  //   try {
-  //     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-  //     if (pickedFile != null) {
-  //       setState(() => _images.add(File(pickedFile.path)));
-  //     }
-  //   } catch (e) {
-  //     print('Error picking image: $e');
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Error picking image: $e')),
-  //     );
-  //   }
-  // }
   Future<void> _pickImage() async {
     try {
       showDialog(
@@ -494,41 +503,86 @@ class _PostItemPageState extends State<PostItemPage> {
     }
   }
 
+  void _showInfoModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return Container(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'GuideLines for Posting a Found Item',
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(height: 10),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Text(
+                      '1. Don\'t Snoop: Avoid looking through the item in detail, as this could violate the person\'s privacy. If it\'s necessary to examine the item to identify the owner (for example, a wallet or purse), try to do so minimally.\n\n2. Identify the Owner: If there\'s any identification on or in the item (like a name, address, or phone number), you can use this information to try and contact the owner.\n\n3. Contact Relevant Authorities: If you can\'t identify the owner, consider turning the item over to local law enforcement or lost and found departments, if available. They might be able to find the owner or they might have been contacted by someone who lost an item.\n\n4. Protecting Personal Information: If the item contains sensitive information (like credit cards, ID cards, etc.), and you can\'t find the owner, make sure to give it to the police or a similar trustworthy organization. Never use this information for personal gain, as this is illegal and unethical.\n\n5. Protecting Personal Information: If the item contains sensitive information (like credit cards, ID cards, etc.), and you can\'t find the owner, make sure to give it to the police or a similar trustworthy organization. Never use this information for personal gain, as this is illegal and unethical.',
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                InkWell(
+                  onTap: () => Navigator.pop(context),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Ok',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(width: 5),
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _submitForm() async {
+    if (_images.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please add at least one image')),
+      );
+      return;
+    }
+
     final user = FirebaseAuth.instance.currentUser;
     final userId = user!.uid;
 
     if (_formKey.currentState!.validate()) {
-      final fullName = _fullNameController.text.trim();
-      final phoneNo = _phoneNoController.text.trim();
+      // final fullName = _fullNameController.text.trim();
+      //final phoneNo = _phoneNoController.text.trim();
       final title = _titleController.text.trim();
       final description = _descriptionController.text.trim();
       final imageUrls = await _uploadImages();
       final collection = await FirebaseFirestore.instance.collection('Posts');
-      // final userDocRef = collection.doc(userId);
-      //final entrySubcollectionRef = userDocRef.collection('entries');
+
       final entryData = {
         "id": userId,
-        'full_name': fullName,
-        'phone_no': phoneNo,
+        'full_name': FULLNAME,
+        'phone_no': PHONE,
         'category': _category,
         'title': title,
         'description': description,
         'post_type': _postType,
         'image_urls': imageUrls,
         'address': _locationText,
+        'date': DateTime.now(),
       };
       await collection.add(entryData);
-
-      //  final collection = await FirebaseFirestore.instance.collection('Posts').doc(userId).set({
-      //     'full_name': fullName,
-      //     'phone_no': phoneNo,
-      //     'category': _category,
-      //     'title': title,
-      //     'description': description,
-      //     'post_type': _postType,
-      //     'image_urls': imageUrls,
-      //   });
 
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Item Posted Successfully')));

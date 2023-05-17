@@ -8,7 +8,6 @@ import 'package:getwidget/getwidget.dart';
 import "package:google_sign_in/google_sign_in.dart";
 
 import "../widgets/HomeBottomBar.dart";
-import "chatbot.dart";
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
